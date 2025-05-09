@@ -2,9 +2,15 @@
 __pycache__/
 *.py[cod]
 
+# Virtual environment
+.venv/
+
 # Logs
 logs/
 *.log
+
+# Sensitive files
+.env
 
 # Data files
 sample_data/

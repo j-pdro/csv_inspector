@@ -1,26 +1,25 @@
 # report_generator.py
+
 from io import StringIO
 from datetime import datetime
+import pandas as pd
 
 def generate_txt_report(df, filename):
     buffer = StringIO()
     now = datetime.now().strftime('%d/%m/%Y %H:%M:%S')
 
-    # Título
     buffer.write("=" * 60 + "\n")
     buffer.write("📊 RELATÓRIO DE ANÁLISE DE DADOS\n")
     buffer.write("=" * 60 + "\n")
     buffer.write(f"Arquivo analisado : {filename}\n")
     buffer.write(f"Data da geração   : {now}\n\n")
 
-    # Informações gerais
     buffer.write("-" * 60 + "\n")
     buffer.write("🔹 INFORMAÇÕES GERAIS\n")
     buffer.write("-" * 60 + "\n")
     buffer.write(f"Número de linhas  : {df.shape[0]}\n")
     buffer.write(f"Número de colunas : {df.shape[1]}\n\n")
 
-    # Tipos de dados
     buffer.write("-" * 60 + "\n")
     buffer.write("🔹 TIPOS DE DADOS POR COLUNA\n")
     buffer.write("-" * 60 + "\n")
@@ -28,7 +27,6 @@ def generate_txt_report(df, filename):
         buffer.write(f"{col:<30} -> {dtype}\n")
     buffer.write("\n")
 
-    # Valores ausentes
     buffer.write("-" * 60 + "\n")
     buffer.write("🔹 VALORES AUSENTES\n")
     buffer.write("-" * 60 + "\n")
@@ -41,7 +39,6 @@ def generate_txt_report(df, filename):
         buffer.write("✅ Nenhuma coluna com valores ausentes.\n")
     buffer.write("\n")
 
-    # Estatísticas descritivas
     buffer.write("-" * 60 + "\n")
     buffer.write("🔹 ESTATÍSTICAS DESCRITIVAS (NUMÉRICAS)\n")
     buffer.write("-" * 60 + "\n")
@@ -52,7 +49,6 @@ def generate_txt_report(df, filename):
         )
     buffer.write("\n")
 
-    # Valores únicos
     buffer.write("-" * 60 + "\n")
     buffer.write("🔹 DIVERSIDADE DE VALORES\n")
     buffer.write("-" * 60 + "\n")
@@ -61,7 +57,6 @@ def generate_txt_report(df, filename):
         buffer.write(f"{col:<30} {unique_count} valores únicos\n")
     buffer.write("\n")
 
-    # Observações finais
     buffer.write("-" * 60 + "\n")
     buffer.write("📌 OBSERVAÇÕES FINAIS\n")
     buffer.write("-" * 60 + "\n")
@@ -75,12 +70,11 @@ def generate_txt_report(df, filename):
     return buffer
 
 
-# NOVA FUNÇÃO: Versão formatada com Markdown
 def generate_markdown_report(df, filename):
     now = datetime.now().strftime('%d/%m/%Y %H:%M:%S')
     lines = []
 
-    lines.append(f"## 📊 Relatório de Análise de Dados\n")
+    lines.append("## 📊 Relatório de Análise de Dados")
     lines.append(f"**Arquivo analisado:** `{filename}`  ")
     lines.append(f"**Data da geração:** {now}\n")
 
@@ -89,8 +83,11 @@ def generate_markdown_report(df, filename):
     lines.append(f"- **Número de colunas:** {df.shape[1]}\n")
 
     lines.append("### 🔹 Tipos de Dados por Coluna")
-    for col, dtype in df.dtypes.items():
-        lines.append(f"- `{col}` → `{dtype}`")
+    types_df = pd.DataFrame({
+        "Coluna": df.columns,
+        "Tipo de Dado": df.dtypes.astype(str).values
+    })
+    lines.append(types_df.to_markdown(index=False))
     lines.append("")
 
     lines.append("### 🔹 Valores Ausentes")
