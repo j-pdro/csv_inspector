@@ -95,4 +95,4 @@ streamlit run app.py
 
 ---
 
-Desenvolvido como parte do seu portfólio de Ciência de Dados, com foco em código limpo, boas práticas e interatividade.
+Desenvolvido como parte do meu portfólio de Ciência de Dados, com foco em código limpo, boas práticas e interatividade.
