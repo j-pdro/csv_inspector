@@ -76,6 +76,7 @@ csv_inspector/
 ### Download em PDF
 - Pesquisar e integrar biblioteca (ex: `pdfkit` ou `reportlab`).
 - Gerar PDF com gráficos estáticos exportados como imagens.
+- Implementar funcionalidade de download direto via Streamlit.
 
 ### Deploy no Streamlit Cloud
 - Conectar repositório GitHub.
