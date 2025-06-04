@@ -10,7 +10,7 @@ Ideal para quem quer entender rapidamente a estrutura, qualidade e padrões dos 
 
 ## 🚀 Demonstração Online
 
-> [Acesse o app no Streamlit Cloud](colar_aqui_link_deploy)
+> [Acesse o app no Streamlit](https://csv-inspector.streamlit.app/)
 
 ---
 

@@ -6,7 +6,7 @@ from datetime import datetime
 from report_generator import generate_txt_report, generate_markdown_report
 
 # Configurações da página
-st.set_page_config(page_title="CSV Analyzer", layout="wide")
+st.set_page_config(page_title="CSV Inspector", layout="wide")
 st.title("🔎 CSV Analyzer")
 
 # Upload do arquivo CSV
