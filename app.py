@@ -7,7 +7,7 @@ from report_generator import generate_txt_report, generate_markdown_report
 
 # Configurações da página
 st.set_page_config(page_title="CSV Inspector", layout="wide")
-st.title("🔎 CSV Analyzer")
+st.title("🔎 CSV Inspector")
 
 # Upload do arquivo CSV
 uploaded_file = st.file_uploader("Selecione um arquivo CSV", type="csv")
