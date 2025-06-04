@@ -1,124 +1,143 @@
-# report_generator.py
-
+import pandas as pd
 from io import StringIO
 from datetime import datetime
-import pandas as pd
 
-def generate_txt_report(df, filename):
+def generate_txt_report(df: pd.DataFrame, filename: str) -> StringIO:
     buffer = StringIO()
-    now = datetime.now().strftime('%d/%m/%Y %H:%M:%S')
 
     buffer.write("=" * 60 + "\n")
     buffer.write("📊 RELATÓRIO DE ANÁLISE DE DADOS\n")
     buffer.write("=" * 60 + "\n")
     buffer.write(f"Arquivo analisado : {filename}\n")
-    buffer.write(f"Data da geração   : {now}\n\n")
+    buffer.write(f"Data da geração   : {datetime.now().strftime('%d/%m/%Y %H:%M:%S')}\n")
+    buffer.write("\n")
 
     buffer.write("-" * 60 + "\n")
     buffer.write("🔹 INFORMAÇÕES GERAIS\n")
     buffer.write("-" * 60 + "\n")
     buffer.write(f"Número de linhas  : {df.shape[0]}\n")
-    buffer.write(f"Número de colunas : {df.shape[1]}\n\n")
+    buffer.write(f"Número de colunas : {df.shape[1]}\n")
+    buffer.write("\n")
 
     buffer.write("-" * 60 + "\n")
     buffer.write("🔹 TIPOS DE DADOS POR COLUNA\n")
     buffer.write("-" * 60 + "\n")
-    for col, dtype in df.dtypes.items():
-        buffer.write(f"{col:<30} -> {dtype}\n")
+    for col in df.columns:
+        buffer.write(f"{col:<30} -> {df[col].dtype}\n")
     buffer.write("\n")
 
     buffer.write("-" * 60 + "\n")
     buffer.write("🔹 VALORES AUSENTES\n")
     buffer.write("-" * 60 + "\n")
-    nulls = df.isnull().sum()
-    nulls = nulls[nulls > 0]
-    if not nulls.empty:
-        for col, total in nulls.items():
-            buffer.write(f"{col:<30} {total} valores ausentes\n")
-    else:
+    missing = df.isnull().sum()
+    if missing.sum() == 0:
         buffer.write("✅ Nenhuma coluna com valores ausentes.\n")
+    else:
+        for col in df.columns:
+            if missing[col] > 0:
+                buffer.write(f"{col:<30} -> {missing[col]} valores ausentes\n")
     buffer.write("\n")
 
     buffer.write("-" * 60 + "\n")
     buffer.write("🔹 ESTATÍSTICAS DESCRITIVAS (NUMÉRICAS)\n")
     buffer.write("-" * 60 + "\n")
-    describe = df.describe().T
-    for col in describe.index:
-        buffer.write(
-            f"{col:<20} | média: {describe.loc[col, 'mean']:.2f} | min: {describe.loc[col, 'min']:.2f} | max: {describe.loc[col, 'max']:.2f} | desvio: {describe.loc[col, 'std']:.2f}\n"
-        )
+    numeric_cols = df.select_dtypes(include=["number"]).columns
+    if len(numeric_cols) == 0:
+        buffer.write("Nenhuma coluna numérica encontrada.\n")
+    else:
+        for col in numeric_cols:
+            media = df[col].mean()
+            mediana = df[col].median()
+            desvio = df[col].std()
+            minimo = df[col].min()
+            maximo = df[col].max()
+            buffer.write(
+                f"{col:<20} | média: {media:.2f} | mediana: {mediana:.2f} | valor mínimo: {minimo:.2f} | valor máximo: {maximo:.2f} desvio padrão: {desvio:.2f} | ausentes: {df[col].isnull().sum()}\n"
+            )
+    buffer.write("\n")
+
+    buffer.write("-" * 60 + "\n")
+    buffer.write("🔹 ANÁLISE DE COLUNAS CATEGÓRICAS\n")
+    buffer.write("-" * 60 + "\n")
+    categorical_cols = df.select_dtypes(include=["object", "category"]).columns
+    if len(categorical_cols) == 0:
+        buffer.write("Nenhuma coluna categórica encontrada.\n")
+    else:
+        for col in categorical_cols:
+            unicos = df[col].nunique(dropna=True)
+            modo = df[col].mode().iloc[0] if not df[col].mode().empty else "N/A"
+            freq = df[col].value_counts(dropna=True).iloc[0] if not df[col].value_counts(dropna=True).empty else 0
+            ausentes = df[col].isnull().sum()
+            buffer.write(f"{col:<30} | únicos: {unicos} | mais frequente: '{modo}' ({freq}x) | ausentes: {ausentes}\n")
     buffer.write("\n")
 
     buffer.write("-" * 60 + "\n")
     buffer.write("🔹 DIVERSIDADE DE VALORES\n")
     buffer.write("-" * 60 + "\n")
     for col in df.columns:
-        unique_count = df[col].nunique()
-        buffer.write(f"{col:<30} {unique_count} valores únicos\n")
+        unicos = df[col].nunique(dropna=True)
+        buffer.write(f"{col:<30} {unicos} valores únicos\n")
     buffer.write("\n")
 
     buffer.write("-" * 60 + "\n")
     buffer.write("📌 OBSERVAÇÕES FINAIS\n")
     buffer.write("-" * 60 + "\n")
     buffer.write("- Relatório gerado automaticamente pelo CSV Analyzer.\n")
-    if nulls.shape[0] > 0:
-        buffer.write(f"- {nulls.shape[0]} colunas possuem valores ausentes.\n")
-    else:
+    if missing.sum() == 0:
         buffer.write("- Todas as colunas estão completas.\n")
+    else:
+        buffer.write("- Algumas colunas possuem valores ausentes.\n")
 
-    buffer.seek(0)
     return buffer
 
+def generate_markdown_report(df: pd.DataFrame, filename: str) -> str:
+    from datetime import datetime
 
-def generate_markdown_report(df, filename):
-    now = datetime.now().strftime('%d/%m/%Y %H:%M:%S')
-    lines = []
+    md = f"# 📊 Relatório de Análise de Dados\n"
+    md += f"**Arquivo analisado:** `{filename}`  \n"
+    md += f"**Data da geração:** {datetime.now().strftime('%d/%m/%Y %H:%M:%S')}\n\n"
 
-    lines.append("## 📊 Relatório de Análise de Dados")
-    lines.append(f"**Arquivo analisado:** `{filename}`  ")
-    lines.append(f"**Data da geração:** {now}\n")
+    md += "## 🔹 Informações Gerais\n"
+    md += f"- **Linhas:** {df.shape[0]}\n"
+    md += f"- **Colunas:** {df.shape[1]}\n\n"
 
-    lines.append("### 🔹 Informações Gerais")
-    lines.append(f"- **Número de linhas:** {df.shape[0]}")
-    lines.append(f"- **Número de colunas:** {df.shape[1]}\n")
+    md += "## 🔹 Tipos de Dados por Coluna\n"
+    md += df.dtypes.to_frame("Tipo").to_markdown() + "\n\n"
 
-    lines.append("### 🔹 Tipos de Dados por Coluna")
-    types_df = pd.DataFrame({
-        "Coluna": df.columns,
-        "Tipo de Dado": df.dtypes.astype(str).values
-    })
-    lines.append(types_df.to_markdown(index=False))
-    lines.append("")
-
-    lines.append("### 🔹 Valores Ausentes")
-    nulls = df.isnull().sum()
-    nulls = nulls[nulls > 0]
-    if not nulls.empty:
-        for col, total in nulls.items():
-            lines.append(f"- `{col}`: {total} valores ausentes")
+    md += "## 🔹 Valores Ausentes\n"
+    missing = df.isnull().sum()
+    if missing.sum() == 0:
+        md += "✅ Nenhuma coluna com valores ausentes.\n\n"
     else:
-        lines.append("✅ Nenhuma coluna com valores ausentes.")
-    lines.append("")
+        md += missing.to_frame("Valores Ausentes").to_markdown() + "\n\n"
 
-    lines.append("### 🔹 Estatísticas Descritivas")
-    describe = df.describe().T
-    for col in describe.index:
-        lines.append(
-            f"- `{col}` → média: **{describe.loc[col, 'mean']:.2f}**, min: **{describe.loc[col, 'min']:.2f}**, max: **{describe.loc[col, 'max']:.2f}**, desvio: **{describe.loc[col, 'std']:.2f}**"
-        )
-    lines.append("")
+    md += "## 🔹 Estatísticas Descritivas (Numéricas)\n"
+    numeric_cols = df.select_dtypes(include=["number"]).columns
+    if len(numeric_cols) == 0:
+        md += "Nenhuma coluna numérica encontrada.\n\n"
+    else:
+        md += df[numeric_cols].describe().to_markdown() + "\n\n"
 
-    lines.append("### 🔹 Diversidade de Valores")
+    md += "## 🔹 Análise de Colunas Categóricas\n"
+    categorical_cols = df.select_dtypes(include=["object", "category"]).columns
+    if len(categorical_cols) == 0:
+        md += "Nenhuma coluna categórica encontrada.\n\n"
+    else:
+        for col in categorical_cols:
+            unicos = df[col].nunique(dropna=True)
+            modo = df[col].mode().iloc[0] if not df[col].mode().empty else "N/A"
+            freq = df[col].value_counts(dropna=True).iloc[0] if not df[col].value_counts(dropna=True).empty else 0
+            ausentes = df[col].isnull().sum()
+            md += f"- **{col}**: únicos: {unicos} | mais frequente: `{modo}` ({freq}x) | ausentes: {ausentes}\n"
+        md += "\n"
+
+    md += "## 🔹 Diversidade de Valores\n"
     for col in df.columns:
-        unique_count = df[col].nunique()
-        lines.append(f"- `{col}`: {unique_count} valores únicos")
-    lines.append("")
+        unicos = df[col].nunique(dropna=True)
+        md += f"- **{col}**: {unicos} valores únicos\n"
+    md += "\n"
 
-    lines.append("### 📌 Observações Finais")
-    lines.append("- Relatório gerado automaticamente pelo **CSV Analyzer**.")
-    if nulls.shape[0] > 0:
-        lines.append(f"- {nulls.shape[0]} colunas possuem valores ausentes.")
-    else:
-        lines.append("- Todas as colunas estão completas.")
+    md += "---\n"
+    md += "Relatório gerado automaticamente pelo CSV Analyzer.\n"
 
-    return "\n".join(lines)
+    return md

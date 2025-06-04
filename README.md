@@ -1,99 +1,117 @@
-README.md
-
-# 📊 CSV Analyzer Inteligente
-
-Aplicação web construída com Streamlit para realizar análise exploratória de dados em arquivos CSV. Permite visualizar dados, gerar relatórios detalhados e baixar resultados.
-
-## 🚀 Funcionalidades Implementadas
-
-### Upload de CSV
-- Suporte a arquivos `.csv` via `st.file_uploader`.
-
-### Visualização de Dados
-- Exibição dentro de `st.expander` para ocultar/mostrar a tabela.
-
-### Geração de Relatório
-- **TXT (download):** via `generate_txt_report()`.
-- **Markdown (exibição):** via `generate_markdown_report()`.
-
-#### Seções do relatório:
-1. Informações Gerais
-2. Tipos de Dados por Coluna
-3. Valores Ausentes
-4. Estatísticas Descritivas
-5. Diversidade de Valores
-6. Observações Finais
-
-### Exibição Organizada
-- Uso de `st.expander` para declutter da interface.
-- Relatório formatado com Markdown para melhor legibilidade.
-
-### Download de Relatório
-- Botão para baixar `.txt`.
-- Mensagem indicativa de futura opção de PDF.
-
-## 📁 Estrutura de Pastas
 
 ```
-csv_inspector/
-├── app.py                  # App principal Streamlit
-├── report_generator.py     # Funções de geração de relatório (TXT e Markdown)
-├── utils/                  # Módulos auxiliares (futuro)
-│   └── logger_config.py    # Configuração de logging
-├── sample_data/            # CSVs de exemplo
-│   └── exemplo.csv
-├── logs/                   # Diretório de logs da aplicação
-│   └── app.log
-├── requirements.txt        # Dependências
-└── README.md               # Documentação
-```
+# 🔎 CSV Analyzer
 
-## 🛠️ Próximos Passos (Tasks)
+![Streamlit](https://static.streamlit.io/badges/streamlit_badge_black_white.svg)
 
-### Testes Unitários Simples
-- Criar testes para `generate_txt_report()`:
-  - Verificar que o buffer não é vazio.
-  - Conferir presença de seções-chave (título, informações gerais).
-- Criar testes para `generate_markdown_report()`:
-  - Validar que o output começa com `## 📊 Relatório`.
-  - Garantir que todas as colunas do DataFrame aparecem.
+Um aplicativo interativo em **Streamlit** para análise exploratória automática de arquivos CSV.  
+Ideal para quem quer entender rapidamente a estrutura, qualidade e padrões dos dados — sem precisar programar!
 
-### Configuração de Logging
-- Implementar `utils/logger_config.py` e integrar ao `app.py`:
-  - Registrar eventos de upload bem-sucedido.
-  - Registrar erros em `try-except`.
-- Testar geração de `logs/app.log` com entradas de `INFO` e `ERROR`.
+---
 
-### Validações e Segurança
-- Adicionar checagens antes da análise:
-  - Garantir que o CSV tenha pelo menos uma coluna numérica.
-  - Tratar arquivos mal formatados com mensagem amigável.
+## 🚀 Demonstração Online
 
-### Melhoria de Relatório
-- Incluir contagem de duplicatas.
-- Adicionar correlação entre variáveis numéricas.
+> [Acesse o app no Streamlit Cloud](colar_aqui_link_deploy)
 
-### Download em PDF
-- Pesquisar e integrar biblioteca (ex: `pdfkit` ou `reportlab`).
-- Gerar PDF com gráficos estáticos exportados como imagens.
-- Implementar funcionalidade de download direto via Streamlit.
+---
 
-### Deploy no Streamlit Cloud
-- Conectar repositório GitHub.
-- Configurar branch principal e `requirements.txt`.
-- Publicar e validar funcionamento online.
+## ✨ Funcionalidades
 
-## 📥 Como Rodar Localmente
+- **Upload de CSV**: Carregue qualquer arquivo CSV para análise.
+- **Visualização dos Dados**: Veja a tabela completa no navegador.
+- **Relatório Exploratória Automático**:
+  - Informações gerais (linhas, colunas, tipos de dados)
+  - Valores ausentes
+  - Estatísticas descritivas (média, mediana, desvio padrão, mínimo, máximo)
+  - Análise de colunas categóricas (moda, frequência, diversidade)
+  - Diversidade de valores por coluna
+- **Download do Relatório**: Baixe o relatório em `.txt`.
+- **Gráficos Automáticos**:
+  - **Boxplots** para colunas numéricas
+  - **Gráficos de barras** para colunas categóricas
+  - Visualização lado a lado para facilitar a análise
+- **Interface amigável**: Tudo organizado em expansores, sem poluição visual.
+- **Em breve**: Exportação em PDF e HTML.
+
+---
+
+## 🖼️ Exemplos Visuais
+
+> **Adicione aqui printscreens do app rodando!**
+>
+> - Upload de CSV
+> - Relatório exploratório
+> - Gráficos automáticos
+
+---
+
+## ⚙️ Como usar
+
+### 1. Clone o repositório
 
 ```bash
-git clone git@github.com:j-pdro/csv_inspector.git
+git clone https://github.com/j-pdro/csv_inspector.git
 cd csv_inspector
+```
+
+### 2. Crie o ambiente virtual e instale as dependências
+
+```bash
 python -m venv .venv
-source .venv/bin/activate  # ou .venv\Scripts\activate no Windows
+source .venv/bin/activate  # Linux/Mac
+.venv\Scripts\activate     # Windows
+
 pip install -r requirements.txt
+```
+
+### 3. Rode o app
+
+```bash
 streamlit run app.py
 ```
 
 ---
 
-Desenvolvido como parte do meu portfólio de Ciência de Dados, com foco em código limpo, boas práticas e interatividade.
+## 🧪 Testes
+
+Execute os testes unitários com:
+
+```bash
+pytest tests/
+```
+
+---
+
+## 📦 Estrutura do Projeto
+
+```
+csv_inspector/
+│
+├── app.py
+├── report_generator.py
+├── requirements.txt
+├── tests/
+│   └── test_report_generator.py
+└── ...
+```
+
+---
+
+## 🛣️ Roadmap
+
+- [x] Relatório TXT e Markdown
+- [x] Gráficos automáticos (boxplot, barras)
+- [x] Testes unitários
+- [ ] Exportação em PDF/HTML
+- [ ] Filtros e seleção de colunas para gráficos
+- [ ] Melhorias visuais e responsividade
+
+---
+
+## 📢 Licença
+
+MIT
+
+---
+
+```
