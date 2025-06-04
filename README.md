@@ -35,12 +35,14 @@ Ideal para quem quer entender rapidamente a estrutura, qualidade e padrões dos 
 
 ## 🖼️ Exemplos Visuais
 
-> **Adicione aqui printscreens do app rodando!**
->
+> !(https://github.com/j-pdro/csv_inspector/blob/main/assets/csv-1.gif)
+> !(https://github.com/j-pdro/csv_inspector/blob/main/assets/csv-2.gif)
+> !(https://github.com/j-pdro/csv_inspector/blob/main/assets/csv-3.gif)
 > - Upload de CSV
 > - Relatório exploratório
 > - Gráficos automáticos
 
+[CSV usado para a demonstração] ( )
 ---
 
 ## ⚙️ Como usar
