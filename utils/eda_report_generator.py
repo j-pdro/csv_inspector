@@ -38,23 +38,6 @@ def generate_txt_report(df: pd.DataFrame, filename: str) -> StringIO:
                 buffer.write(f"{col:<30} -> {missing[col]} valores ausentes\n")
     buffer.write("\n")
 
-    buffer.write("-" * 60 + "\n")
-    buffer.write("🔹 ESTATÍSTICAS DESCRITIVAS (NUMÉRICAS)\n")
-    buffer.write("-" * 60 + "\n")
-    numeric_cols = df.select_dtypes(include=["number"]).columns
-    if len(numeric_cols) == 0:
-        buffer.write("Nenhuma coluna numérica encontrada.\n")
-    else:
-        for col in numeric_cols:
-            media = df[col].mean()
-            mediana = df[col].median()
-            desvio = df[col].std()
-            minimo = df[col].min()
-            maximo = df[col].max()
-            buffer.write(
-                f"{col:<20} | média: {media:.2f} | mediana: {mediana:.2f} | valor mínimo: {minimo:.2f} | valor máximo: {maximo:.2f} desvio padrão: {desvio:.2f} | ausentes: {df[col].isnull().sum()}\n"
-            )
-    buffer.write("\n")
 
     buffer.write("-" * 60 + "\n")
     buffer.write("🔹 ANÁLISE DE COLUNAS CATEGÓRICAS\n")
@@ -82,7 +65,7 @@ def generate_txt_report(df: pd.DataFrame, filename: str) -> StringIO:
     buffer.write("-" * 60 + "\n")
     buffer.write("📌 OBSERVAÇÕES FINAIS\n")
     buffer.write("-" * 60 + "\n")
-    buffer.write("- Relatório gerado automaticamente pelo CSV Analyzer.\n")
+    buffer.write("- Relatório gerado automaticamente.\n")
     if missing.sum() == 0:
         buffer.write("- Todas as colunas estão completas.\n")
     else:
@@ -111,12 +94,6 @@ def generate_markdown_report(df: pd.DataFrame, filename: str) -> str:
     else:
         md += missing.to_frame("Valores Ausentes").to_markdown() + "\n\n"
 
-    md += "## 🔹 Estatísticas Descritivas (Numéricas)\n"
-    numeric_cols = df.select_dtypes(include=["number"]).columns
-    if len(numeric_cols) == 0:
-        md += "Nenhuma coluna numérica encontrada.\n\n"
-    else:
-        md += df[numeric_cols].describe().to_markdown() + "\n\n"
 
     md += "## 🔹 Análise de Colunas Categóricas\n"
     categorical_cols = df.select_dtypes(include=["object", "category"]).columns
@@ -138,6 +115,6 @@ def generate_markdown_report(df: pd.DataFrame, filename: str) -> str:
     md += "\n"
 
     md += "---\n"
-    md += "Relatório gerado automaticamente pelo CSV Analyzer.\n"
+    md += "Relatório gerado automaticamente.\n"
 
     return md

@@ -1,8 +1,5 @@
-# requirements.txt
 streamlit
 pandas
-plotly
-matplotlib
-seaborn
 numpy
-tabulate
+seaborn
+plotly
