@@ -51,7 +51,7 @@ Basta fazer o download e fazer upload no app!
 *   Visualização interativa do DataFrame completo.
 *   Análise de tipos de dados, contagem de nulos e uso de memória por coluna.
 *   Geração de gráficos de distribuição para entender as features visivelmente.
->>>>>>> 799ff1d2 (Commit new changes)
+
 
 ### 2. 🔢 Calculadora de Indicadores Estatísticos
 *   Cálculo de estatísticas descritivas (média, mediana, desvio padrão, quartis) para colunas numéricas.
@@ -170,7 +170,7 @@ Contribuições são o que tornam a comunidade de código aberto um lugar incrí
 
 ## 📄 Licença
 
-Distribuído sob a licença MIT. Veja [LICENSE][https://github.com/j-pdro/csv_inspector/blob/main/LICENSE] para mais informações.
+Distribuído sob a licença MIT. Veja [LICENSE](https://github.com/j-pdro/csv_inspector/blob/main/LICENSE) para mais informações.
 
 ## 📧 Contato
 
