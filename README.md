@@ -30,10 +30,6 @@ Ela permite que o usuário execute todo o fluxo de trabalho de forma visual e co
 
 O grande diferencial é o sistema de **edição não-destrutiva com pipeline reutilizável**, que une a flexibilidade da análise manual com as melhores práticas de MLOps e automação.
 
-
-> ![1° video](https://github.com/j-pdro/csv_inspector/blob/main/assets/csv-1.gif)
-> ![2° video](https://github.com/j-pdro/csv_inspector/blob/main/assets/csv-2.gif)
-> ![3° video](https://github.com/j-pdro/csv_inspector/blob/main/assets/csv-3.gif)
 > - Upload de CSV
 > - Relatório exploratório
 > - Gráficos automáticos
@@ -41,9 +37,9 @@ O grande diferencial é o sistema de **edição não-destrutiva com pipeline reu
 Para testar rapidamente, use o arquivo de exemplo disponível no kaggle:
  - [CSV usado para a demonstração](https://www.kaggle.com/datasets/jayaantanaath/student-habits-vs-academic-performance)
 
-Basta fazer o download e fazer upload no app!
+#### Basta fazer o download e fazer upload no app!
 ---
-=======
+
 ## 🎯 Funcionalidades por Módulo
 
 ### 1. 🧠 Analisador de CSV Inteligente (EDA)
