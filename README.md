@@ -35,8 +35,7 @@ O grande diferencial é o sistema de **edição não-destrutiva com pipeline reu
 > - Gráficos automáticos
 
 Para testar rapidamente, use o arquivo de exemplo disponível no kaggle:
- - [CSV usado para a demonstração](https://www.kaggle.com/datasets/jayaantanaath/student-habits-vs-academic-performance)
-
+ - [CSV usado para a demonstração](https://www.kaggle.com/datasets/rakeshkapilavai/extrovert-vs-introvert-behavior-data)
 #### Basta fazer o download e fazer upload no app!
 ---
 
