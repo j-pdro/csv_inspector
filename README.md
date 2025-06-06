@@ -171,5 +171,3 @@ Distribuído sob a licença MIT. Veja [LICENSE](https://github.com/j-pdro/csv_in
 ## 📧 Contato
 
 [LinkedIn](https://www.linkedin.com/in/devjp/)
-
-````
