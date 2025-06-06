@@ -12,10 +12,10 @@
 
 ### ✨ Demonstração Rápida
 
-*(Aqui é o lugar perfeito para um GIF mostrando o fluxo completo: upload -> navegação na aba de Análise Exploratória -> cálculo de alguns Indicadores Estatísticos -> aplicação de duas transformações no Pré-Processamento -> clique no "Desfazer" -> download do pipeline.)*
+<!-- *(Aqui é o lugar perfeito para um GIF mostrando o fluxo completo: upload -> navegação na aba de Análise Exploratória -> cálculo de alguns Indicadores Estatísticos -> aplicação de duas transformações no Pré-Processamento -> clique no "Desfazer" -> download do pipeline.)*
 
 ![GIF de Demonstração do App](https://placeholder.com/wp-content/uploads/2022/06/placeholder-image.png) 
-*<-- Substitua por um GIF real da aplicação em uso!*
+*<-- Substitua por um GIF real da aplicação em uso!* -->
 
 ---
 
@@ -30,7 +30,7 @@ Ela permite que o usuário execute todo o fluxo de trabalho de forma visual e co
 
 O grande diferencial é o sistema de **edição não-destrutiva com pipeline reutilizável**, que une a flexibilidade da análise manual com as melhores práticas de MLOps e automação.
 
-<<<<<<< HEAD
+
 > ![1° video](https://github.com/j-pdro/csv_inspector/blob/main/assets/csv-1.gif)
 > ![2° video](https://github.com/j-pdro/csv_inspector/blob/main/assets/csv-2.gif)
 > ![3° video](https://github.com/j-pdro/csv_inspector/blob/main/assets/csv-3.gif)
@@ -170,13 +170,12 @@ Contribuições são o que tornam a comunidade de código aberto um lugar incrí
 
 ## 📄 Licença
 
-Distribuído sob a licença MIT. Veja `LICENSE.txt` para mais informações.
+Distribuído sob a licença MIT. Veja [LICENSE][https://github.com/j-pdro/csv_inspector/blob/main/LICENSE] para mais informações.
 
 ## 📧 Contato
 
-**[Seu Nome Aqui]** - [seu.linkedin@exemplo.com](mailto:seu.linkedin@exemplo.com) - [Link para seu Perfil (LinkedIn, GitHub)](https://www.linkedin.com/)
+[LinkedIn](https://www.linkedin.com/in/devjp/)
 
-Link do Projeto: [https://github.com/seu-usuario/seu-repositorio](https://github.com/seu-usuario/seu-repositorio)
 ````
 
 ---
