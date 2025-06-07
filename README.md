@@ -12,6 +12,9 @@
 
 ### ✨ Demonstração Rápida
 
+![EDA](https://github.com/j-pdro/csv_inspector/blob/main/assets/eda.gif)
+![Indicadores Estatísticos](https://github.com/j-pdro/csv_inspector/blob/main/assets/indicadores.gif)
+![Pré-processamento e Limpeza](https://github.com/j-pdro/csv_inspector/blob/main/assets/preprocessamento.gif)
 <!-- *(Aqui é o lugar perfeito para um GIF mostrando o fluxo completo: upload -> navegação na aba de Análise Exploratória -> cálculo de alguns Indicadores Estatísticos -> aplicação de duas transformações no Pré-Processamento -> clique no "Desfazer" -> download do pipeline.)*
 
 ![GIF de Demonstração do App](https://placeholder.com/wp-content/uploads/2022/06/placeholder-image.png) 
