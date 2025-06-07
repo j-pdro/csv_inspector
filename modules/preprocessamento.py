@@ -1,9 +1,9 @@
 import streamlit as st
 import pandas as pd
-import numpy as np 
-import io 
+import numpy as np
+import io
 import json
-from utils import preprocess_helpers 
+from utils import preprocess_helpers
 
 def run_preprocessamento(df_original: pd.DataFrame, filename_original: str):
     """
@@ -22,8 +22,8 @@ def run_preprocessamento(df_original: pd.DataFrame, filename_original: str):
         st.session_state.df_processed = df_original.copy()
         st.session_state.preprocess_df_original_ref_columns = df_original.columns.tolist()
         st.session_state.preprocess_df_original_ref_shape = df_original.shape
-        st.session_state.preprocess_feedback = None 
-        st.session_state.pipeline_steps = [] 
+        st.session_state.preprocess_feedback = None
+        st.session_state.pipeline_steps = []
         st.session_state.undo_stack = []
 
     if 'undo_stack' not in st.session_state:
@@ -48,7 +48,7 @@ def run_preprocessamento(df_original: pd.DataFrame, filename_original: str):
             st.warning(feedback["message"])
         else:
             st.info(feedback["message"])
-        st.session_state.preprocess_feedback = None 
+        st.session_state.preprocess_feedback = None
 
     st.info("As transformações nas primeiras abas são aplicadas sequencialmente ao DataFrame. Você pode resetar para o estado original ou desfazer a última ação a qualquer momento.")
 
@@ -71,7 +71,7 @@ def run_preprocessamento(df_original: pd.DataFrame, filename_original: str):
                         if strategy == "Remover Linhas com Nulos" and "removed_rows_df" in data_to_restore:
                             df_to_reinsert = data_to_restore["removed_rows_df"]
                             st.session_state.df_processed = pd.concat([st.session_state.df_processed, df_to_reinsert]).sort_index()
-                        # TODO: Adicionar lógica de reversão para outras estratégias de nulos aqui
+                            # TODO: Adicionar lógica de reversão para outras estratégias de nulos aqui
                     
                     elif operation_to_undo == "Remoção de Linhas Duplicadas":
                         if "removed_rows_df" in data_to_restore:
@@ -109,7 +109,7 @@ def run_preprocessamento(df_original: pd.DataFrame, filename_original: str):
                 st.session_state.df_processed = df_original.copy()
                 st.session_state.preprocess_df_original_ref_columns = df_original.columns.tolist()
                 st.session_state.preprocess_df_original_ref_shape = df_original.shape
-                st.session_state.pipeline_steps = [] 
+                st.session_state.pipeline_steps = []
                 st.session_state.undo_stack = []
                 st.session_state.preprocess_feedback = {"type": "info", "message": "DataFrame resetado para o estado original e pipeline limpo."}
                 st.rerun()
@@ -133,7 +133,7 @@ def run_preprocessamento(df_original: pd.DataFrame, filename_original: str):
                 "Selecione colunas para tratar nulos", na_cols_all, default=None, key="na_cols_select_key"
             )
             na_strategy = st.radio(
-                "Estratégia:", ["Remover Linhas com Nulos", "Remover Colunas com Nulos", "Preencher Nulos"], 
+                "Estratégia:", ["Remover Linhas com Nulos", "Remover Colunas com Nulos", "Preencher Nulos"],
                 key="na_strategy_radio_key", horizontal=True
             )
             na_col_thresh_percent, na_fill_num_method, na_fill_cat_method, na_fill_value = 50, "Média", "Moda", ""
@@ -147,12 +147,12 @@ def run_preprocessamento(df_original: pd.DataFrame, filename_original: str):
                 col_fill_1, col_fill_2 = st.columns(2)
                 with col_fill_1:
                     na_fill_num_method = st.selectbox(
-                        "Método para numéricas:", ["Média", "Mediana", "Moda", "Valor Específico"], 
+                        "Método para numéricas:", ["Média", "Mediana", "Moda", "Valor Específico"],
                         key="na_fill_num_method_select_key"
                     )
                 with col_fill_2:
                     na_fill_cat_method = st.selectbox(
-                        "Método para categóricas:", ["Moda", "Valor Específico"], 
+                        "Método para categóricas:", ["Moda", "Valor Específico"],
                         key="na_fill_cat_method_select_key"
                     )
                 if "Valor Específico" in [na_fill_num_method, na_fill_cat_method]:
@@ -161,65 +161,69 @@ def run_preprocessamento(df_original: pd.DataFrame, filename_original: str):
                     )
             submitted_nulos = st.form_submit_button("Aplicar Tratamento de Nulos")
 
-            if submitted_nulos:
-                cols_to_process_nulos = na_cols
-                if not na_cols and na_strategy == "Remover Colunas com Nulos":
-                    cols_to_process_nulos = st.session_state.df_processed.columns.tolist() 
-                elif not na_cols and na_strategy != "Remover Colunas com Nulos":
-                    st.session_state.preprocess_feedback = {"type": "warning", "message": "Selecione colunas para esta estratégia."}
-                    st.rerun() 
+        if submitted_nulos:
+            cols_to_process_nulos = na_cols
+            if not na_cols and na_strategy == "Remover Colunas com Nulos":
+                cols_to_process_nulos = st.session_state.df_processed.columns.tolist()
+            elif not na_cols and na_strategy != "Remover Colunas com Nulos":
+                st.session_state.preprocess_feedback = {"type": "warning", "message": "Selecione colunas para esta estratégia."}
+                st.rerun()
 
-                if cols_to_process_nulos or (na_strategy == "Remover Colunas com Nulos"):
-                    
-                    if na_strategy == "Remover Linhas com Nulos":
-                        df = st.session_state.df_processed
-                        condition = df[cols_to_process_nulos].isnull().any(axis=1)
-                        removed_rows_df = df[condition].copy()
+            if cols_to_process_nulos or (na_strategy == "Remover Colunas com Nulos"):
+                
+                if na_strategy == "Remover Linhas com Nulos":
+                    df = st.session_state.df_processed
+                    condition = df[cols_to_process_nulos].isnull().any(axis=1)
+                    removed_rows_df = df[condition].copy()
 
-                        if not removed_rows_df.empty:
-                            description = f"Removeu {len(removed_rows_df)} linha(s) com nulos em {', '.join(cols_to_process_nulos)}"
-                            undo_action = {
-                                "operation_name": "Tratamento de Nulos",
-                                "description_for_history": description,
-                                "data_for_undo": {
-                                    "strategy": "Remover Linhas com Nulos",
-                                    "removed_rows_df": removed_rows_df
-                                }
+                    if not removed_rows_df.empty:
+                        description = f"Removeu {len(removed_rows_df)} linha(s) com nulos em {', '.join(cols_to_process_nulos)}"
+                        undo_action = {
+                            "operation_name": "Tratamento de Nulos",
+                            "description_for_history": description,
+                            "data_for_undo": {
+                                "strategy": "Remover Linhas com Nulos",
+                                "removed_rows_df": removed_rows_df
                             }
-                            st.session_state.undo_stack.append(undo_action)
-                    # TODO: Implementar coleta de undo para outras estratégias de nulos
+                        }
+                        st.session_state.undo_stack.append(undo_action)
+                        # TODO: Implementar coleta de undo para outras estratégias de nulos
 
-                    df_temp, msg = preprocess_helpers.handle_missing_values(
-                        st.session_state.df_processed, columns=cols_to_process_nulos, strategy=na_strategy,
-                        threshold=na_col_thresh_percent, fill_numeric_method=na_fill_num_method,
-                        fill_categorical_method=na_fill_cat_method, specific_value=na_fill_value
-                    )
-                    if "Erro" in msg or "inválida" in msg or "Por favor, selecione colunas" in msg: 
-                        st.session_state.preprocess_feedback = {"type": "error", "message": msg}
-                        if na_strategy == "Remover Linhas com Nulos" and st.session_state.undo_stack:
-                            if st.session_state.undo_stack[-1]["description_for_history"].startswith("Removeu"):
-                                st.session_state.undo_stack.pop()
-                    else:
-                        st.session_state.df_processed = df_temp
-                        st.session_state.preprocess_feedback = {"type": "success", "message": msg}
-                        step_params = {"strategy": na_strategy, "columns": cols_to_process_nulos}
-                        if na_strategy == "Remover Colunas com Nulos":
-                            step_params["threshold_percentage"] = na_col_thresh_percent
-                        elif na_strategy == "Preencher Nulos":
-                            fill_details = {"numeric_method": na_fill_num_method, "categorical_method": na_fill_cat_method}
-                            if "Valor Específico" in [na_fill_num_method, na_fill_cat_method] and na_fill_value:
-                                fill_details["specific_value"] = na_fill_value
-                            step_params["fill_details"] = fill_details
-                        st.session_state.pipeline_steps.append({"operation_name": "Tratamento de Nulos", "parameters": step_params})
-                    st.rerun()
+                df_temp, msg = preprocess_helpers.handle_missing_values(
+                    st.session_state.df_processed, columns=cols_to_process_nulos, strategy=na_strategy,
+                    threshold=na_col_thresh_percent, fill_numeric_method=na_fill_num_method,
+                    fill_categorical_method=na_fill_cat_method, specific_value=na_fill_value
+                )
+                if "Erro" in msg or "inválida" in msg or "Por favor, selecione colunas" in msg:
+                    st.session_state.preprocess_feedback = {"type": "error", "message": msg}
+                    if na_strategy == "Remover Linhas com Nulos" and st.session_state.undo_stack:
+                        if st.session_state.undo_stack[-1]["description_for_history"].startswith("Removeu"):
+                            st.session_state.undo_stack.pop()
+                else:
+                    st.session_state.df_processed = df_temp
+                    st.session_state.preprocess_feedback = {"type": "success", "message": msg}
+                    step_params = {"strategy": na_strategy, "columns": cols_to_process_nulos}
+                    if na_strategy == "Remover Colunas com Nulos":
+                        step_params["threshold_percentage"] = na_col_thresh_percent
+                    elif na_strategy == "Preencher Nulos":
+                        fill_details = {"numeric_method": na_fill_num_method, "categorical_method": na_fill_cat_method}
+                        if "Valor Específico" in [na_fill_num_method, na_fill_cat_method] and na_fill_value:
+                            fill_details["specific_value"] = na_fill_value
+                        step_params["fill_details"] = fill_details
+                    st.session_state.pipeline_steps.append({"operation_name": "Tratamento de Nulos", "parameters": step_params})
+                st.rerun()
 
     # --- Tab: Duplicatas ---
     with tab_duplicatas:
         st.subheader("Remoção de Linhas Duplicadas")
+        
+        # CORREÇÃO APLICADA AQUI
         num_duplicates = st.session_state.df_processed.duplicated().sum() if not st.session_state.df_processed.empty else 0
+        is_button_disabled = (int(num_duplicates) == 0)
+        
         st.write(f"Linhas duplicadas encontradas: **{num_duplicates}**")
         
-        if st.button("Remover Linhas Duplicadas", key="remove_duplicates_btn_key", disabled=(num_duplicates == 0)):
+        if st.button("Remover Linhas Duplicadas", key="remove_duplicates_btn_key", disabled=is_button_disabled):
             df = st.session_state.df_processed
             duplicates_df = df[df.duplicated(keep='first')].copy()
 
@@ -255,44 +259,44 @@ def run_preprocessamento(df_original: pd.DataFrame, filename_original: str):
         st.subheader("Conversão de Tipos de Dados")
         if st.session_state.df_processed.empty: st.warning("DataFrame vazio.")
         else:
-            with st.form("types_form", clear_on_submit=True): 
+            with st.form("types_form", clear_on_submit=True):
                 type_col_select = st.selectbox("Coluna para alterar tipo:", st.session_state.df_processed.columns.tolist(), key="type_col_select_box_key", index=None)
                 type_new_type = st.selectbox("Converter para:", ["Numérico (float)", "Numérico (int)", "Texto (string)", "Data/Hora (datetime)"], key="type_new_type_select_key")
                 submitted_types = st.form_submit_button("Aplicar Conversão")
-                if submitted_types and type_col_select:
-                    # --- COLETA PARA UNDO ---
-                    original_series = st.session_state.df_processed[type_col_select].copy()
-                    undo_action = {
-                        "operation_name": "Conversão de Tipos de Dados",
-                        "description_for_history": f"Conversão de tipo da coluna '{type_col_select}'",
-                        "data_for_undo": {
-                            "original_series": original_series,
-                            "column_name": type_col_select
-                        }
+            if submitted_types and type_col_select:
+                # --- COLETA PARA UNDO ---
+                original_series = st.session_state.df_processed[type_col_select].copy()
+                undo_action = {
+                    "operation_name": "Conversão de Tipos de Dados",
+                    "description_for_history": f"Conversão de tipo da coluna '{type_col_select}'",
+                    "data_for_undo": {
+                        "original_series": original_series,
+                        "column_name": type_col_select
                     }
-                    st.session_state.undo_stack.append(undo_action)
-                    # --- FIM COLETA ---
+                }
+                st.session_state.undo_stack.append(undo_action)
+                # --- FIM COLETA ---
 
-                    df_temp, msg = preprocess_helpers.convert_data_type(st.session_state.df_processed, type_col_select, type_new_type)
-                    if "Erro" not in msg and "Falha" not in msg:
-                        st.session_state.df_processed = df_temp
-                        st.session_state.preprocess_feedback = {"type": "success", "message": msg}
-                        st.session_state.pipeline_steps.append({
-                            "operation_name": "Conversão de Tipos de Dados",
-                            "parameters": {"column_to_convert": type_col_select, "new_type": type_new_type}
-                        })
-                        buffer_info_col = io.StringIO()
-                        st.session_state.df_processed[[type_col_select]].info(buf=buffer_info_col)
-                        st.text_area(f"Info da coluna '{type_col_select}' após conversão:", buffer_info_col.getvalue(), height=100, key=f"info_conv_{type_col_select}")
+                df_temp, msg = preprocess_helpers.convert_data_type(st.session_state.df_processed, type_col_select, type_new_type)
+                if "Erro" not in msg and "Falha" not in msg:
+                    st.session_state.df_processed = df_temp
+                    st.session_state.preprocess_feedback = {"type": "success", "message": msg}
+                    st.session_state.pipeline_steps.append({
+                        "operation_name": "Conversão de Tipos de Dados",
+                        "parameters": {"column_to_convert": type_col_select, "new_type": type_new_type}
+                    })
+                    buffer_info_col = io.StringIO()
+                    st.session_state.df_processed[[type_col_select]].info(buf=buffer_info_col)
+                    st.text_area(f"Info da coluna '{type_col_select}' após conversão:", buffer_info_col.getvalue(), height=100, key=f"info_conv_{type_col_select}")
 
-                    else: 
-                        st.session_state.preprocess_feedback = {"type": "error", "message": msg}
-                        if st.session_state.undo_stack and st.session_state.undo_stack[-1]["operation_name"] == "Conversão de Tipos de Dados":
-                            st.session_state.undo_stack.pop()
-                    st.rerun()
-                elif submitted_types and not type_col_select: 
-                    st.session_state.preprocess_feedback = {"type": "warning", "message": "Nenhuma coluna selecionada."}
-                    st.rerun()
+                else:
+                    st.session_state.preprocess_feedback = {"type": "error", "message": msg}
+                    if st.session_state.undo_stack and st.session_state.undo_stack[-1]["operation_name"] == "Conversão de Tipos de Dados":
+                        st.session_state.undo_stack.pop()
+                st.rerun()
+            elif submitted_types and not type_col_select:
+                st.session_state.preprocess_feedback = {"type": "warning", "message": "Nenhuma coluna selecionada."}
+                st.rerun()
 
     # --- Tab: Codificação de Categorias ---
     with tab_encoding:
@@ -305,54 +309,54 @@ def run_preprocessamento(df_original: pd.DataFrame, filename_original: str):
                 enc_method_options = {"One-Hot Encoding (Colunas Binárias)": "One-Hot Encoding (Dummy Variables)", "Label Encoding (Rótulos Numéricos)": "Label Encoding"}
                 enc_method_display = st.radio("Método:", list(enc_method_options.keys()), key="enc_method_radio_key", horizontal=True)
                 submitted_encoding = st.form_submit_button("Aplicar Codificação")
-                if submitted_encoding:
-                    if not enc_cols: 
-                        st.session_state.preprocess_feedback = {"type": "warning", "message": "Nenhuma coluna selecionada."}
-                    else:
-                        actual_enc_method = enc_method_options[enc_method_display]
-                        # --- COLETA PARA UNDO ---
-                        if actual_enc_method == "Label Encoding":
-                            # Salva todas as colunas originais
-                            original_series_dict = {col: st.session_state.df_processed[col].copy() for col in enc_cols}
-                            undo_action = {
-                                "operation_name": "Codificação de Colunas Categóricas",
-                                "description_for_history": f"Label Encoding em {', '.join(enc_cols)}",
-                                "data_for_undo": {
-                                    "encoding_type": "label",
-                                    "original_series_dict": original_series_dict
-                                }
+            if submitted_encoding:
+                if not enc_cols:
+                    st.session_state.preprocess_feedback = {"type": "warning", "message": "Nenhuma coluna selecionada."}
+                else:
+                    actual_enc_method = enc_method_options[enc_method_display]
+                    # --- COLETA PARA UNDO ---
+                    if actual_enc_method == "Label Encoding":
+                        # Salva todas as colunas originais
+                        original_series_dict = {col: st.session_state.df_processed[col].copy() for col in enc_cols}
+                        undo_action = {
+                            "operation_name": "Codificação de Colunas Categóricas",
+                            "description_for_history": f"Label Encoding em {', '.join(enc_cols)}",
+                            "data_for_undo": {
+                                "encoding_type": "label",
+                                "original_series_dict": original_series_dict
                             }
-                            st.session_state.undo_stack.append(undo_action)
-                        elif actual_enc_method == "One-Hot Encoding (Dummy Variables)":
-                            original_columns_df = st.session_state.df_processed[enc_cols].copy()
-                            df_temp, _ = preprocess_helpers.encode_categorical_features(st.session_state.df_processed, enc_cols, actual_enc_method)
-                            new_dummy_columns = list(set(df_temp.columns) - set(st.session_state.df_processed.columns))
-                            undo_action = {
-                                "operation_name": "Codificação de Colunas Categóricas",
-                                "description_for_history": f"One-Hot Encoding em {', '.join(enc_cols)}",
-                                "data_for_undo": {
-                                    "encoding_type": "onehot",
-                                    "original_columns_df": original_columns_df,
-                                    "dummy_columns": new_dummy_columns
-                                }
+                        }
+                        st.session_state.undo_stack.append(undo_action)
+                    elif actual_enc_method == "One-Hot Encoding (Dummy Variables)":
+                        original_columns_df = st.session_state.df_processed[enc_cols].copy()
+                        df_temp, _ = preprocess_helpers.encode_categorical_features(st.session_state.df_processed, enc_cols, actual_enc_method)
+                        new_dummy_columns = list(set(df_temp.columns) - set(st.session_state.df_processed.columns))
+                        undo_action = {
+                            "operation_name": "Codificação de Colunas Categóricas",
+                            "description_for_history": f"One-Hot Encoding em {', '.join(enc_cols)}",
+                            "data_for_undo": {
+                                "encoding_type": "onehot",
+                                "original_columns_df": original_columns_df,
+                                "dummy_columns": new_dummy_columns
                             }
-                            st.session_state.undo_stack.append(undo_action)
-                        # --- FIM COLETA ---
+                        }
+                        st.session_state.undo_stack.append(undo_action)
+                    # --- FIM COLETA ---
 
-                        df_temp, msg = preprocess_helpers.encode_categorical_features(st.session_state.df_processed, enc_cols, actual_enc_method)
-                        if "Erro" not in msg:
-                            st.session_state.df_processed = df_temp
-                            st.session_state.preprocess_feedback = {"type": "success", "message": msg}
-                            st.session_state.pipeline_steps.append({
-                                "operation_name": "Codificação de Colunas Categóricas",
-                                "parameters": {"columns_to_encode": enc_cols, "method": actual_enc_method}
-                            })
-                            st.dataframe(st.session_state.df_processed.head())
-                        else: 
-                            st.session_state.preprocess_feedback = {"type": "error", "message": msg}
-                            if st.session_state.undo_stack and st.session_state.undo_stack[-1]["operation_name"] == "Codificação de Colunas Categóricas":
-                                st.session_state.undo_stack.pop()
-                    st.rerun()
+                    df_temp, msg = preprocess_helpers.encode_categorical_features(st.session_state.df_processed, enc_cols, actual_enc_method)
+                    if "Erro" not in msg:
+                        st.session_state.df_processed = df_temp
+                        st.session_state.preprocess_feedback = {"type": "success", "message": msg}
+                        st.session_state.pipeline_steps.append({
+                            "operation_name": "Codificação de Colunas Categóricas",
+                            "parameters": {"columns_to_encode": enc_cols, "method": actual_enc_method}
+                        })
+                        st.dataframe(st.session_state.df_processed.head())
+                    else:
+                        st.session_state.preprocess_feedback = {"type": "error", "message": msg}
+                        if st.session_state.undo_stack and st.session_state.undo_stack[-1]["operation_name"] == "Codificação de Colunas Categóricas":
+                            st.session_state.undo_stack.pop()
+                st.rerun()
 
     # --- Tab: Escalonamento ---
     with tab_escalonamento:
@@ -364,36 +368,36 @@ def run_preprocessamento(df_original: pd.DataFrame, filename_original: str):
                 scale_cols = st.multiselect("Colunas para escalonar:", num_cols_options, key="scale_cols_select_key")
                 scale_method = st.radio("Método:", ["Min-Max Scaler (Normalização)", "Standard Scaler (Padronização)"], key="scale_method_radio_key", horizontal=True)
                 submitted_scaling = st.form_submit_button("Aplicar Escalonamento")
-                if submitted_scaling:
-                    if not scale_cols: 
-                        st.session_state.preprocess_feedback = {"type": "warning", "message": "Nenhuma coluna selecionada."}
-                    else:
-                        # --- COLETA PARA UNDO ---
-                        original_columns_df = st.session_state.df_processed[scale_cols].copy()
-                        undo_action = {
-                            "operation_name": "Escalonamento de Colunas Numéricas",
-                            "description_for_history": f"Escalonamento de {', '.join(scale_cols)}",
-                            "data_for_undo": {
-                                "original_columns_df": original_columns_df
-                            }
+            if submitted_scaling:
+                if not scale_cols:
+                    st.session_state.preprocess_feedback = {"type": "warning", "message": "Nenhuma coluna selecionada."}
+                else:
+                    # --- COLETA PARA UNDO ---
+                    original_columns_df = st.session_state.df_processed[scale_cols].copy()
+                    undo_action = {
+                        "operation_name": "Escalonamento de Colunas Numéricas",
+                        "description_for_history": f"Escalonamento de {', '.join(scale_cols)}",
+                        "data_for_undo": {
+                            "original_columns_df": original_columns_df
                         }
-                        st.session_state.undo_stack.append(undo_action)
-                        # --- FIM COLETA ---
+                    }
+                    st.session_state.undo_stack.append(undo_action)
+                    # --- FIM COLETA ---
 
-                        df_temp, msg = preprocess_helpers.scale_numerical_features(st.session_state.df_processed, scale_cols, scale_method)
-                        if "Erro" not in msg and "não pode ser escalonada" not in msg:
-                            st.session_state.df_processed = df_temp
-                            st.session_state.preprocess_feedback = {"type": "success", "message": msg}
-                            st.session_state.pipeline_steps.append({
-                                "operation_name": "Escalonamento de Colunas Numéricas",
-                                "parameters": {"columns_to_scale": scale_cols, "method": scale_method}
-                            })
-                            st.dataframe(st.session_state.df_processed[scale_cols].describe())
-                        else: 
-                            st.session_state.preprocess_feedback = {"type": "error", "message": msg}
-                            if st.session_state.undo_stack and st.session_state.undo_stack[-1]["operation_name"] == "Escalonamento de Colunas Numéricas":
-                                st.session_state.undo_stack.pop()
-                    st.rerun()
+                    df_temp, msg = preprocess_helpers.scale_numerical_features(st.session_state.df_processed, scale_cols, scale_method)
+                    if "Erro" not in msg and "não pode ser escalonada" not in msg:
+                        st.session_state.df_processed = df_temp
+                        st.session_state.preprocess_feedback = {"type": "success", "message": msg}
+                        st.session_state.pipeline_steps.append({
+                            "operation_name": "Escalonamento de Colunas Numéricas",
+                            "parameters": {"columns_to_scale": scale_cols, "method": scale_method}
+                        })
+                        st.dataframe(st.session_state.df_processed[scale_cols].describe())
+                    else:
+                        st.session_state.preprocess_feedback = {"type": "error", "message": msg}
+                        if st.session_state.undo_stack and st.session_state.undo_stack[-1]["operation_name"] == "Escalonamento de Colunas Numéricas":
+                            st.session_state.undo_stack.pop()
+                st.rerun()
 
     # --- Tab: Visualizar/Baixar Interativo ---
     with tab_visualizar:
@@ -404,7 +408,7 @@ def run_preprocessamento(df_original: pd.DataFrame, filename_original: str):
 
         st.markdown("#### Informações do DataFrame")
         if not st.session_state.df_processed.empty:
-            buffer_info_df = io.StringIO() 
+            buffer_info_df = io.StringIO()
             st.session_state.df_processed.info(buf=buffer_info_df)
             st.text_area("Informações:", buffer_info_df.getvalue(), height=200, key="df_info_processed_text_area", disabled=True)
         else: st.warning("DataFrame vazio, sem informações.")
@@ -413,7 +417,7 @@ def run_preprocessamento(df_original: pd.DataFrame, filename_original: str):
             csv_processed = st.session_state.df_processed.to_csv(index=False).encode('utf-8')
             st.download_button(label="Baixar CSV (Edição Interativa)", data=csv_processed, file_name=f"processed_interactive_{filename_original}", mime="text/csv", key="download_interactive_csv")
 
-        st.markdown("---") 
+        st.markdown("---")
         st.subheader("Pipeline de Pré-Processamento Aplicado (Edição Interativa)")
         if 'pipeline_steps' in st.session_state and st.session_state.pipeline_steps:
             st.write("Passos aplicados:")
