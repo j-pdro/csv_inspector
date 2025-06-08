@@ -80,8 +80,8 @@ Para executar este projeto localmente, siga os passos abaixo.
 
 1.  **Clone o repositório:**
     ```bash
-    git clone https://github.com/seu-usuario/seu-repositorio.git
-    cd seu-repositorio
+    git clone git@github.com:j-pdro/csv_inspector.git
+    cd csv_inspector
     ```
 
 2.  **Crie e ative um ambiente virtual (Recomendado):**
