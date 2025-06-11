@@ -24,4 +24,4 @@ By submitting a Contribution, you indicate your agreement to all of the terms an
 
 ---
 
-If you have any questions, contact jpdro.dev@gmail.com.
+If you have any questions, contact email.pdro@gmail.com
