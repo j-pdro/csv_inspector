@@ -169,7 +169,7 @@ Contribuições são o que tornam a comunidade de código aberto um lugar incrí
 ## 📄 Licença
 
 Distribuído sob a licença MIT. Veja [LICENSE](https://github.com/j-pdro/csv_inspector/blob/main/LICENSE) para mais informações.
-Ao usar ou contribuir para este projeto, você concorda com os [TERMOs DE USO](./TERMS_OF_USE.md) e com o [ACORDO DE LINCEÇA DO CONTRIBUIDOR](./CLA.md).
+Ao usar ou contribuir para este projeto, você concorda com os [TERMOS DE USO](./TERMS_OF_USE.md) e com o [ACORDO DE LINCEÇA DO CONTRIBUIDOR](./CLA.md).
 Por favor, leia estes documentos antes de usar ou enviar contribuições.
 
 ## 📧 Contato
